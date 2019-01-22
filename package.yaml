@@ -1,0 +1,20 @@
+name: refinedjournal
+version: 0.0.0.0
+github: "cbresendiz1/refinedjournal"
+author: ""
+maintainer: ""
+copyright: ""
+
+extra-source-files:
+- README.md
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs:
+  - src/
+  dependencies:
+  - liquidhaskell
+  - containers
+  - time
