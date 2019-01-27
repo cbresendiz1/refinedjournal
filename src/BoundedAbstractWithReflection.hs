@@ -1,5 +1,4 @@
-{-# LANGUAGE FlexibleContexts #-}
---{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-@ LIQUID "--prune-unsorted" @-}
 {-@ LIQUID "--reflection" @-}
 module BoundedAbstractWithReflection where
@@ -37,11 +36,40 @@ size (SNode v lt rt) = 1 + size lt + size rt
 -- I think I need an assume function and verification
 {- I think this is the start of something bad down below -}
 
+
+-- Let's try with a data structure that has only one value it most check no matter what
+
+{-@ data Checkthisout a <p :: a -> Bool, r :: a -> a -> Bool> =
+        EmptyCheck
+      | Manager {king :: a<p>
+                ,lackeys :: [a<p>]<r king>} @-}
+data Checkthisout a =
+    EmptyCheck
+  | Manager {king    :: a
+            ,lackeys :: [a]}
+
+{-@ insertElm :: forall <p:: a -> Bool,r:: a -> a -> Bool>.
+    x:a<p> -> Checkthisout <p,r> a -> Checkthisout <p,r> a @-}
+insertElm :: a -> Checkthisout a -> Checkthisout a
+insertElm x EmptyCheck = Manager x []
+insertElm l (Manager k lacks) = Manager k (l:lacks)
+
+{- I think expanding the predicates would be helpful
+   Also, what are your questions and what do you need to know
+   Well, my question in this case is to figure out why Manager
+   doesn't work
+-}
+
+-- probably if you need to merge like mergebranch, you will need to create an append
+
+{- TODO -}
+-- For this example, you need to figure out how logical constraints can be transferred with
+--   with operations like insertions and deletion
 -- don't use assume!
 {-@ mergeBranch :: forall<p:: a -> Bool, l:: a -> a -> Bool, r:: a -> a -> Bool>.
     a<p> -> STree <p,l,r> a -> STree <p,l,r> a -> STree <p,l,r> a @-} -- don't we get different invariants with different branches
 mergeBranch :: a -> STree a -> STree a -> STree a
-mergeBranch v lt rt = SNode v lt rt
+mergeBranch v lt rt = undefined --SNode v lt rt
 
 {-@ constructNode
       :: forall<p :: a -> Bool, l :: a -> a -> Bool, r :: a -> a -> Bool, newq :: a -> a -> Bool, newr :: a -> a -> Bool>.
